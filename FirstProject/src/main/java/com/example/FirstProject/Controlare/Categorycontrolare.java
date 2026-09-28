@@ -2,6 +2,7 @@ package com.example.FirstProject.Controlare;
 
 import com.example.FirstProject.Service.CategoryService;
 import com.example.FirstProject.model.Category;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class Categorycontrolare {
         return categoryService.getAllCategories();
     }
     @PostMapping("/public/category")
-    public String createCategory(@RequestBody Category category ) {
+    public String createCategory(@Valid @RequestBody Category category ) {
        categoryService.CreateCategory(category);
         return " Category created successfully";
     }
@@ -40,7 +41,7 @@ public class Categorycontrolare {
     }
 //        @RequestMapping(value ="/admin/category/{id}",method = RequestMethod.PUT )
     @PutMapping("/admin/category/{id}")
-    public ResponseEntity<String> updateCategory(@RequestBody Category category, @PathVariable Long id) {
+    public ResponseEntity<String> updateCategory( @RequestBody Category category, @PathVariable Long id) {
 
         try {
            Category category1=    categoryService.updateCategory(category,id);
