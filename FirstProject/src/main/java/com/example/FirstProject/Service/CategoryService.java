@@ -7,7 +7,7 @@ import com.example.FirstProject.payload.CategoryResponse;
 import java.util.List;
 
 public interface CategoryService {
-    CategoryResponse getAllCategories();
+    CategoryResponse getAllCategories(Integer pageNumber, Integer pageSize,String sortBy,String sortOrder);
     CategoryDTOReq CreateCategory(CategoryDTOReq categoryDTO);
     CategoryDTOReq deleteCategory(Long id);
 

@@ -8,6 +8,10 @@ import com.example.FirstProject.payload.CategoryDTOReq;
 import com.example.FirstProject.payload.CategoryResponse;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,9 +24,14 @@ public class CategoryServiceimp implements CategoryService{
     @Autowired
     private ModelMapper modelMapper  ;
     @Override
-    public CategoryResponse getAllCategories() {
+    public CategoryResponse getAllCategories(Integer pageNumber, Integer pageSize,String sortBy,String sortOrder ) {
+        Sort SortByAndOrder=sortOrder.equalsIgnoreCase("asc")
+                ?Sort.by( sortBy).ascending():Sort.by( sortBy).descending();
 
-        List<Category> categories = categoryrepo.findAll();
+        Pageable pageable= PageRequest.of(pageNumber,pageSize,SortByAndOrder) ;
+        Page<Category> categoryPage= categoryrepo.findAll(pageable);
+
+        List<Category> categories = categoryPage.getContent();
         if (categories.isEmpty()) {
             throw new APIException("There is no category Found");
         }
@@ -30,6 +39,11 @@ List<CategoryDTOReq> categoriesDTO = categories.stream().map(category->modelMapp
         CategoryDTOReq.class)).toList();
         CategoryResponse categoryResponse = new CategoryResponse();
         categoryResponse.setCategories(categoriesDTO);
+        categoryResponse.setTotalPages(categoryPage.getTotalPages());
+        categoryResponse.setTotalElements(categoryPage.getTotalElements());
+        categoryResponse.setPageSize(categoryPage.getSize());
+        categoryResponse.setPageNumber(categoryPage.getNumber());
+    categoryResponse.setLastPage(categoryPage.isLast());
         return categoryResponse;
     }
 
