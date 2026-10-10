@@ -1,9 +1,6 @@
 package com.example.FirstProject.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -13,6 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import javax.annotation.processing.Generated;
+import java.util.List;
+
 @Entity(name = "categories")
 @Data
 @NoArgsConstructor
@@ -25,6 +24,7 @@ private Long categoryid;
 @Size(min=5,message = "Category must be at least 5 characters")
 @NotBlank
 private String categoryName;
-
+@OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    private List<Prouducts>  prouducts;
 
 }
