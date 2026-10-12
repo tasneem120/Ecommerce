@@ -1,0 +1,72 @@
+package com.example.FirstProject.model;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+import org.apache.tomcat.Jar;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+@Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "users",
+
+uniqueConstraints = {
+        @UniqueConstraint(columnNames = "userName"),
+        @UniqueConstraint(columnNames = "userEmail")
+})
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "userId")
+    private Long userId;
+    @NotBlank
+    @Size(  max = 20)
+    @Column(name = "userName")
+    private String userName;
+    @NotBlank
+    @Size( max = 50)
+    @Email
+    @Column(name = "userEmail")
+    private String userEmail;
+    @NotBlank
+    @Size( max = 120)
+    @Column(name = "userPassword")
+    private String userPassword;
+
+    public User(String userPassword, String userEmail, String userName) {
+        this.userPassword = userPassword;
+        this.userEmail = userEmail;
+        this.userName = userName;
+    }
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
+   @JoinTable(
+           name = "user_role",
+            joinColumns=@JoinColumn(name = "user_id"),
+           inverseJoinColumns = @JoinColumn(name="role_id")
+   )
+    @Getter
+    @Setter
+    private Set<Role> roles=new HashSet<>();
+    @OneToMany(mappedBy = "user",cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+    orphanRemoval = true)
+    @ToString.Exclude
+    private Set<Prouducts> prouducts;
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE} )
+    @JoinTable(
+            name = "user_address",
+            joinColumns = @JoinColumn(name="user_id"),
+            inverseJoinColumns = @JoinColumn(name = "address_id")
+    )
+    @Getter
+    @Setter
+    private List<Address> addresses=new ArrayList<>();
+
+}
