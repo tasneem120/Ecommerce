@@ -28,7 +28,7 @@ public class User {
     @Column(name = "userId")
     private Long userId;
     @NotBlank
-    @Size(  max = 20)
+//    @Size(  min = )
     @Column(name = "userName")
     private String userName;
     @NotBlank
@@ -41,7 +41,7 @@ public class User {
     @Column(name = "userPassword")
     private String userPassword;
 
-    public User(String userPassword, String userEmail, String userName) {
+    public User(String userName, String userEmail, String userPassword) {
         this.userPassword = userPassword;
         this.userEmail = userEmail;
         this.userName = userName;
@@ -54,7 +54,7 @@ public class User {
    )
     @Getter
     @Setter
-    private Set<Role> roles=new HashSet<>();
+    public Set<Role> roles=new HashSet<>();
     @OneToMany(mappedBy = "user",cascade = {CascadeType.PERSIST, CascadeType.MERGE},
     orphanRemoval = true)
     @ToString.Exclude
@@ -69,4 +69,6 @@ public class User {
     @Setter
     private List<Address> addresses=new ArrayList<>();
 
+    public User(@NotBlank @Size(min = 3, max = 20) String username, @NotBlank @Size(min = 6, max = 40) String password) {
+    }
 }

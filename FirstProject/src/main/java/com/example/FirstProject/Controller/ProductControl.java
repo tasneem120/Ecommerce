@@ -1,4 +1,4 @@
-package com.example.FirstProject.Controlare;
+package com.example.FirstProject.Controller;
 
 import com.example.FirstProject.Service.ProductService;
 import com.example.FirstProject.config.AppConstant;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")

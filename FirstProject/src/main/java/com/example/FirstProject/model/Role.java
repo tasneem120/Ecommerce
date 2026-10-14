@@ -15,14 +15,14 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "role_id")
-    private Integer roleId;
+    private Long roleId;
     @Enumerated(EnumType.STRING)
     @ToString.Exclude
     @Column(name = "role_name")
-    private AppRoles appRoles;
+    private AppRoles roleName;
 
     public Role(AppRoles appRoles) {
-        this.appRoles = appRoles;
+        this.roleName = appRoles;
     }
 
 

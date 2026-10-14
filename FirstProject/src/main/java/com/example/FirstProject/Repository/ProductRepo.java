@@ -1,4 +1,4 @@
-package com.example.FirstProject.Reposatery;
+package com.example.FirstProject.Repository;
 
 import com.example.FirstProject.model.Category;
 import com.example.FirstProject.model.Prouducts;

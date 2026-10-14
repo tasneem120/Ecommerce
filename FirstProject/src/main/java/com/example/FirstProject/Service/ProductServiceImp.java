@@ -1,7 +1,7 @@
 package com.example.FirstProject.Service;
 
-import com.example.FirstProject.Reposatery.CategoryRepo;
-import com.example.FirstProject.Reposatery.ProductRepo;
+import com.example.FirstProject.Repository.CategoryRepo;
+import com.example.FirstProject.Repository.ProductRepo;
 import com.example.FirstProject.exception.APIException;
 import com.example.FirstProject.exception.ResourceNotFoundException;
 import com.example.FirstProject.model.Category;

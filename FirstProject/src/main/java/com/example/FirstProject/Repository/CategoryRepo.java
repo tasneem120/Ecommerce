@@ -1,8 +1,6 @@
-package com.example.FirstProject.Reposatery;
+package com.example.FirstProject.Repository;
 
 import com.example.FirstProject.model.Category;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CategoryRepo extends JpaRepository<Category,Long> {

@@ -1,14 +1,10 @@
-package com.example.FirstProject.Controlare;
+package com.example.FirstProject.Controller;
 import com.example.FirstProject.Service.CategoryService;
 import com.example.FirstProject.config.AppConstant;
-import com.example.FirstProject.model.Category;
 import com.example.FirstProject.payload.CategoryDTOReq;
 import com.example.FirstProject.payload.CategoryResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
-public class Categorycontrolare {
+public class Categorycontroller {
     @Autowired
    private CategoryService categoryService;
 
