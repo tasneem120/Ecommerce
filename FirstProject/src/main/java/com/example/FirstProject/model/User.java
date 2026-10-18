@@ -5,7 +5,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.apache.tomcat.Jar;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -40,7 +39,9 @@ public class User {
     @Size( max = 120)
     @Column(name = "userPassword")
     private String userPassword;
-
+    @ToString.Exclude
+@OneToOne(mappedBy = "user",cascade = {CascadeType.MERGE,CascadeType.PERSIST},orphanRemoval = true)
+private Cart cart;
     public User(String userName, String userEmail, String userPassword) {
         this.userPassword = userPassword;
         this.userEmail = userEmail;
@@ -58,7 +59,7 @@ public class User {
     @OneToMany(mappedBy = "user",cascade = {CascadeType.PERSIST, CascadeType.MERGE},
     orphanRemoval = true)
     @ToString.Exclude
-    private Set<Prouducts> prouducts;
+    private Set<Product> prouducts;
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE} )
     @JoinTable(
             name = "user_address",

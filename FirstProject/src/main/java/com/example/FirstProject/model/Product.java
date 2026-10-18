@@ -7,15 +7,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "products")
-public class Prouducts {
+public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productId;
@@ -37,4 +37,7 @@ public class Prouducts {
     @ManyToOne
     @JoinColumn(name = "seller_id")
     private User user;
+    @OneToMany(mappedBy = "product",cascade = {CascadeType.MERGE,CascadeType.PERSIST},  fetch = FetchType.EAGER)
+    private List<CartItem> products=  new ArrayList<>();
+
 }

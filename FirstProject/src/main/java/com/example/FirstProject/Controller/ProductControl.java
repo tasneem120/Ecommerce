@@ -2,7 +2,7 @@ package com.example.FirstProject.Controller;
 
 import com.example.FirstProject.Service.ProductService;
 import com.example.FirstProject.config.AppConstant;
-import com.example.FirstProject.model.Prouducts;
+import com.example.FirstProject.model.Product;
 import com.example.FirstProject.payload.ProductDTO;
 import com.example.FirstProject.payload.ProductResponse;
 import jakarta.validation.Valid;
@@ -20,7 +20,7 @@ public class ProductControl {
     @Autowired
     ProductService productService;
     @PostMapping("admin/categories/{categoryId}/product")
-    public ResponseEntity<ProductDTO> addProduct(@Valid @RequestBody Prouducts products, @PathVariable Long categoryId   ) {
+    public ResponseEntity<ProductDTO> addProduct(@Valid @RequestBody Product products, @PathVariable Long categoryId   ) {
         ProductDTO productDTO = productService.addProduct(products,categoryId);
         return new ResponseEntity<>(productDTO,HttpStatus.CREATED);
 
@@ -62,8 +62,8 @@ public class ProductControl {
     }
     @PutMapping("/admin/products/{productId}")
     public  ResponseEntity<ProductDTO> updateProduct(@PathVariable  Long productId,
-                                                     @RequestBody Prouducts prouducts ) {
-     ProductDTO productDTO=   productService.updateProduct(productId,prouducts);
+                                                     @RequestBody Product product) {
+     ProductDTO productDTO=   productService.updateProduct(productId, product);
 return new ResponseEntity<>(productDTO,HttpStatus.OK);
     }
     @DeleteMapping("/admin/products/{productId}")

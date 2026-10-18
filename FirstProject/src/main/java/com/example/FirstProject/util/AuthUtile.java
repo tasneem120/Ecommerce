@@ -1,0 +1,36 @@
+package com.example.FirstProject.util;
+
+import com.example.FirstProject.Repository.UserRepository;
+import com.example.FirstProject.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
+
+@Component
+public class AuthUtile {
+    @Autowired
+    UserRepository userRepository;
+    public String loggedInEmail(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user=userRepository.findByUserName(authentication.getName()).orElseThrow(
+             ()-> new UsernameNotFoundException("User not found"+authentication.getName())
+        );
+        return user.getUserEmail();
+    }
+    public Long loggedInUserId(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user=userRepository.findByUserName(authentication.getName()).orElseThrow(
+                ()-> new UsernameNotFoundException("Username not found")
+        );
+        return user.getUserId();
+    }
+    public User loggedInUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user=userRepository.findByUserName(authentication.getName()).orElseThrow(
+                ()-> new UsernameNotFoundException("User not found"+authentication.getName())
+        );
+        return user;
+    }
+}

@@ -1,11 +1,14 @@
 package com.example.FirstProject.Service;
 
+import com.example.FirstProject.Repository.CartRepo;
 import com.example.FirstProject.Repository.CategoryRepo;
 import com.example.FirstProject.Repository.ProductRepo;
 import com.example.FirstProject.exception.APIException;
 import com.example.FirstProject.exception.ResourceNotFoundException;
+import com.example.FirstProject.model.Cart;
 import com.example.FirstProject.model.Category;
-import com.example.FirstProject.model.Prouducts;
+import com.example.FirstProject.model.Product;
+import com.example.FirstProject.payload.CartDTO;
 import com.example.FirstProject.payload.ProductDTO;
 import com.example.FirstProject.payload.ProductResponse;
 import org.modelmapper.ModelMapper;
@@ -20,9 +23,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImp implements ProductService {
+    @Autowired
+    CartRepo  cartRepo;
     @Autowired
     ProductRepo productRepo;
     @Autowired
@@ -31,16 +37,18 @@ public class ProductServiceImp implements ProductService {
     ModelMapper modelMapper;
     @Autowired
     FileService fileService;
+    @Autowired
+    CartService cartService;
     @Value("${project.image}")
     String path;
     @Override
-    public ProductDTO addProduct(Prouducts products, Long categoryId) {
+    public ProductDTO addProduct(Product products, Long categoryId) {
         Category category = categoryRepo.findById(categoryId).orElseThrow(()->
                 new ResourceNotFoundException
                         ("Category ","categoryId",categoryId));
         boolean ifProductNotExists = true;
-        List<Prouducts> prouducts=category.getProuducts();
-     for(Prouducts p:prouducts){
+        List<Product> prouducts=category.getProuducts();
+     for(Product p:prouducts){
          if (p.getProductName().equals(products.getProductName())) {
              ifProductNotExists = false;
              break;
@@ -53,7 +61,7 @@ if(ifProductNotExists) {
     double specialPrice = (products.getPrice()) -
             (products.getDiscount() * 0.01) * products.getPrice();
     products.setSpecialPrice(specialPrice);
-    Prouducts savedProduct = productRepo.save(products);
+    Product savedProduct = productRepo.save(products);
 
 
     return modelMapper.map(savedProduct, ProductDTO.class);
@@ -67,8 +75,8 @@ if(ifProductNotExists) {
         Sort sortByAndOrder=sortOrder.equalsIgnoreCase("asc") ?
                 Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
         Pageable  pageableDetails= PageRequest.of(pageNumber,pageSize,sortByAndOrder);
-        Page<Prouducts> pageProduct= productRepo.findAll(pageableDetails);
-        List<Prouducts> savedProduct = pageProduct.getContent();
+        Page<Product> pageProduct= productRepo.findAll(pageableDetails);
+        List<Product> savedProduct = pageProduct.getContent();
         List<ProductDTO> productDTO =  savedProduct.stream().
                 map(product->modelMapper.map(product,ProductDTO.class)).toList();
       if (savedProduct.isEmpty()) {
@@ -95,8 +103,8 @@ if(ifProductNotExists) {
                 new ResourceNotFoundException("Category ","categoryId",categoryId));
   Sort sortByAndOrder=sortOrder.equalsIgnoreCase("asc") ?Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
         Pageable  pageableDetails= PageRequest.of(pageNumber,pageSize,sortByAndOrder);
-        Page<Prouducts> pageProduct= productRepo.findByCategoryOrderByPriceAsc(category,pageableDetails);
-        List<Prouducts> savedProduct = pageProduct.getContent();
+        Page<Product> pageProduct= productRepo.findByCategoryOrderByPriceAsc(category,pageableDetails);
+        List<Product> savedProduct = pageProduct.getContent();
 
         List<ProductDTO> productDTO=savedProduct.stream().
                 map(product->modelMapper.map(product,ProductDTO.class)).toList();
@@ -115,8 +123,8 @@ if(ifProductNotExists) {
     public ProductResponse findProductsByKeyword(String keyword, Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
         Sort sortByAndOrder=sortOrder.equalsIgnoreCase("asc") ?Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
         Pageable  pageableDetails= PageRequest.of(pageNumber,pageSize,sortByAndOrder);
-        Page<Prouducts> pageProduct= productRepo.findByProductNameLikeIgnoreCase('%'+keyword+'%',pageableDetails);
-        List<Prouducts> savedProduct = pageProduct.getContent();
+        Page<Product> pageProduct= productRepo.findByProductNameLikeIgnoreCase('%'+keyword+'%',pageableDetails);
+        List<Product> savedProduct = pageProduct.getContent();
         List<ProductDTO> productDTOS=savedProduct.stream().map(product->modelMapper.map(product,ProductDTO.class)).toList();
         ProductResponse productResponse = new ProductResponse();
         productResponse.setContent(productDTOS);
@@ -131,41 +139,61 @@ if(ifProductNotExists) {
     }
 
     @Override
-    public ProductDTO updateProduct(Long productId, Prouducts prouducts) {
-        Prouducts prouductsFromDB=productRepo.findById(productId).orElseThrow(()
+    public ProductDTO updateProduct(Long productId, Product product) {
+        Product productFromDB =productRepo.findById(productId).orElseThrow(()
                 -> new ResourceNotFoundException("Product","PoductId",productId));
-        prouductsFromDB.setPrice(prouducts.getPrice());
-        prouductsFromDB.setDiscount(prouducts.getDiscount());
-        prouductsFromDB.setProductName(prouducts.getProductName());
-        prouductsFromDB.setDiscount(prouducts.getDiscount());
-        prouductsFromDB.setQuantity(prouducts.getQuantity());
-        prouductsFromDB.setSpecialPrice(prouducts.getSpecialPrice());
+        productFromDB.setPrice(product.getPrice());
+        productFromDB.setDiscount(product.getDiscount());
+        productFromDB.setProductName(product.getProductName());
+        productFromDB.setDiscount(product.getDiscount());
+        productFromDB.setQuantity(product.getQuantity());
+        productFromDB.setSpecialPrice(product.getSpecialPrice());
 
 
 
-Prouducts prouducts1=productRepo.save(prouductsFromDB);
-        return modelMapper.map(prouducts1,ProductDTO.class);
+Product product1 =productRepo.save(productFromDB);
+List<Cart> carts=cartRepo.findCartByProductId(productId);
+List<CartDTO> cartDTOS=carts.stream().map(cart->
+                {
+         CartDTO cartDTO=       modelMapper.map(cart,CartDTO.class);
+         List<ProductDTO >productDTO=  cart.getItems().stream().map(
+                 p->modelMapper.map(p.getProduct(),ProductDTO.class))
+                 .collect(Collectors.toList());
+         cartDTO.setProducts(productDTO);
+return cartDTO;
+                }).toList();
+
+cartDTOS.forEach(cart->{
+    cartService.updateProductInCart(cart.getCartId(),productId);
+
+});
+
+        return modelMapper.map(product1,ProductDTO.class);
     }
 
     @Override
     public ProductDTO deleteProduct(Long productId) {
-        Prouducts prouducts=productRepo.findById(productId).orElseThrow(()
+        Product product =productRepo.findById(productId).orElseThrow(()
                 -> new ResourceNotFoundException("Product","PoductId",productId));
-        productRepo.delete(prouducts);
-        return modelMapper.map(prouducts,ProductDTO.class);
+        List<Cart> carts=cartRepo.findCartByProductId(productId);
+        carts.forEach(cart->{
+            cartService.deleteProductFromCart(cart.getCartId(),productId);
+        });
+        productRepo.delete(product);
+        return modelMapper.map(product,ProductDTO.class);
 
     }
 
     @Override
     public ProductDTO updateProductImage(Long productId, MultipartFile image) throws IOException {
-        Prouducts prouductFromDB=productRepo.findById(productId).orElseThrow(()
+        Product prouductFromDB=productRepo.findById(productId).orElseThrow(()
                 -> new ResourceNotFoundException("Product","PoductId",productId));
 
         String fileName=fileService.uploadImage(path,image);
 prouductFromDB.setImage(fileName);
-Prouducts  prouductsSaved=productRepo.save(prouductFromDB);
+Product productSaved =productRepo.save(prouductFromDB);
 
-       return modelMapper.map(prouductsSaved,ProductDTO.class);
+       return modelMapper.map(productSaved,ProductDTO.class);
     }
 
 

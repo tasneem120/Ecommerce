@@ -4,7 +4,7 @@ import com.example.FirstProject.Repository.CategoryRepo;
 import com.example.FirstProject.exception.APIException;
 import com.example.FirstProject.exception.ResourceNotFoundException;
 import com.example.FirstProject.model.Category;
-import com.example.FirstProject.payload.CategoryDTOReq;
+import com.example.FirstProject.payload.CategoryDTO;
 import com.example.FirstProject.payload.CategoryResponse;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +35,8 @@ public class CategoryServiceimp implements CategoryService{
         if (categories.isEmpty()) {
             throw new APIException("There is no category Found");
         }
-List<CategoryDTOReq> categoriesDTO = categories.stream().map(category->modelMapper.map(category,
-        CategoryDTOReq.class)).toList();
+List<CategoryDTO> categoriesDTO = categories.stream().map(category->modelMapper.map(category,
+        CategoryDTO.class)).toList();
         CategoryResponse categoryResponse = new CategoryResponse();
         categoryResponse.setCategories(categoriesDTO);
         categoryResponse.setTotalPages(categoryPage.getTotalPages());
@@ -48,33 +48,33 @@ List<CategoryDTOReq> categoriesDTO = categories.stream().map(category->modelMapp
     }
 
     @Override
-    public CategoryDTOReq CreateCategory(CategoryDTOReq categoryDTOReq) {
-        Category category = modelMapper.map(categoryDTOReq, Category.class);
+    public CategoryDTO CreateCategory(CategoryDTO categoryDTO) {
+        Category category = modelMapper.map(categoryDTO, Category.class);
 Category savedCategory = categoryrepo.findByCategoryName(category.getCategoryName());
 if(savedCategory!=null){
     throw new APIException("Category with the name  "+category.getCategoryName()+" already exists !!!!!!!!!!!!!!");
 }
 Category savedCategory1 = categoryrepo.save(category);
-        return modelMapper.map(savedCategory1,CategoryDTOReq.class);
+        return modelMapper.map(savedCategory1, CategoryDTO.class);
     }
 
     @Override
-    public CategoryDTOReq deleteCategory(Long id) {
+    public CategoryDTO deleteCategory(Long id) {
 
         Category category = categoryrepo.findById(id) .orElseThrow(()-> new ResourceNotFoundException("Category","CategoryId",id));
         categoryrepo.delete(category);
-CategoryDTOReq categoryDTOReq = modelMapper.map(category,CategoryDTOReq.class);
-       return  modelMapper.map(categoryDTOReq,CategoryDTOReq.class);
+CategoryDTO categoryDTO = modelMapper.map(category, CategoryDTO.class);
+       return  modelMapper.map(categoryDTO, CategoryDTO.class);
     }
 
     @Override
-    public CategoryDTOReq updateCategory(CategoryDTOReq categoryDTOReq, Long id) {
+    public CategoryDTO updateCategory(CategoryDTO categoryDTO, Long id) {
 Category savedCategory= categoryrepo.findById(id).orElseThrow(()->
         new ResourceNotFoundException("Category","CategoryId",id));
-        Category category = modelMapper.map(categoryDTOReq, Category.class);
+        Category category = modelMapper.map(categoryDTO, Category.class);
 
 category.setCategoryid(id);
 savedCategory=categoryrepo.save(category);
-return modelMapper.map(savedCategory,CategoryDTOReq.class);
+return modelMapper.map(savedCategory, CategoryDTO.class);
 
     }}
