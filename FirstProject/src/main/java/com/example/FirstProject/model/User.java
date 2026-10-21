@@ -60,12 +60,9 @@ private Cart cart;
     orphanRemoval = true)
     @ToString.Exclude
     private Set<Product> prouducts;
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE} )
-    @JoinTable(
-            name = "user_address",
-            joinColumns = @JoinColumn(name="user_id"),
-            inverseJoinColumns = @JoinColumn(name = "address_id")
-    )
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+            orphanRemoval = true ,mappedBy = "user")
+
     @Getter
     @Setter
     private List<Address> addresses=new ArrayList<>();

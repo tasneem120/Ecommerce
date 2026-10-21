@@ -32,8 +32,9 @@ public class Address {
     private String country;
     @Size(min = 5, message = "Building name must be at least 5 character")
     private String buildingName;
-    @ManyToMany(mappedBy = "addresses")
-    @ToString.Exclude
-    private List<User> users=new ArrayList<>();
+    @ManyToOne
+
+    @JoinColumn(name = "user_id")
+    private  User  user;
 
 }
