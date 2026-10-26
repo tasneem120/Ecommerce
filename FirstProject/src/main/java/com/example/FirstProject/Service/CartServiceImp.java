@@ -85,7 +85,11 @@ List<CartDTO> cartDTOS=   carts.stream().map(
       cart -> {
           CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
           List<ProductDTO> productDTOS = cart.getItems().stream().map(
-                          p -> modelMapper.map(p.getProduct(), ProductDTO.class))
+                          p ->
+                          {ProductDTO productDTO = modelMapper.map(p.getProduct(), ProductDTO.class);
+                              productDTO.setQuantity(p.getQuantity());
+                            return productDTO;
+                          })
                   .collect(Collectors.toList());
           cartDTO.setProducts(productDTOS);
           return cartDTO;
@@ -169,14 +173,21 @@ cartDTO.setProducts(productDTOStream.toList());
 
     @Override
     public String deleteProductFromCart(Long cartId, Long productId) {
-        Cart cart=cartRepo.findById(cartId).orElseThrow(
-                ()->new ResourceNotFoundException("Cart","cartId",cartId)
-        );
-        CartItem cartItem=cartItemRepo.findCartItemByProductIdAndCartId(productId,cartId);
-        cart.setTotalPrice(cart.getTotalPrice()-(cartItem.getProductPrice()*cartItem.getQuantity()));
-        cartItemRepo.deleteCartItemByProductIdAndCartId(cartId,productId);
+        Cart cart = cartRepo.findById(cartId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart", "cartId", cartId));
 
-        return "Product"+cartItem.getProduct().getProductName()+" removed from cart!!!!!!!!!!!";
+        CartItem cartItem = cartItemRepo.findCartItemByProductIdAndCartId(cartId, productId);
+
+        if (cartItem == null) {
+            throw new ResourceNotFoundException("Product", "productId", productId);
+        }
+
+        cart.setTotalPrice(cart.getTotalPrice() -
+                (cartItem.getProductPrice() * cartItem.getQuantity()));
+
+        cartItemRepo.deleteCartItemByProductIdAndCartId(cartId, productId);
+
+        return "Product " + cartItem.getProduct().getProductName() + " removed from the cart !!!";
     }
 
     @Override
