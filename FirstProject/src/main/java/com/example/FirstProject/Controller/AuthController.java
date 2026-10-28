@@ -11,6 +11,7 @@ import com.example.FirstProject.security.request.SignUpRequest;
 import com.example.FirstProject.security.response.MessageResponse;
 import com.example.FirstProject.security.response.UserInfoResponse;
 import com.example.FirstProject.security.service.UserDetailsImpl;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -41,6 +42,8 @@ UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
     @Autowired
     RoleRepo roleRepo;
+    @Tag(name="Authentication API",description = "APIS for managing Authentication")
+
     @PostMapping("/signin")
     public ResponseEntity<?> authenticatUser(@RequestBody LoginRequst loginRequst) {
         Authentication authentication ;
@@ -71,6 +74,8 @@ UserRepository userRepository;
                         jwtCookie.toString())
                 .body(userInfoResponse);
     }
+    @Tag(name="Authentication API",description = "APIS for managing Authentication")
+
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser( @Valid @RequestBody SignUpRequest  signUpRequest) {
 if (userRepository.existsByUserName(signUpRequest.getUsername())){
@@ -117,6 +122,8 @@ if (userRepository.existsByUserName(signUpRequest.getUsername())){
         userRepository.save(user);
         return  ResponseEntity.ok(new MessageResponse("User registered successfully!!!!!!"));
     }
+    @Tag(name="Authentication API",description = "APIS for managing Authentication")
+
     @GetMapping("/username")
 public  String currentUser(Authentication authentication){
         if (authentication!=null){
@@ -124,6 +131,7 @@ public  String currentUser(Authentication authentication){
         }else return "";
 }
 
+    @Tag(name="Authentication API",description = "APIS for managing Authentication")
 
     @GetMapping("/userdetails")
     public ResponseEntity<?> currentUserDetails(Authentication authentication){
@@ -138,6 +146,8 @@ public  String currentUser(Authentication authentication){
         return ResponseEntity.ok()
                 .body(userInfoResponse);
     }
+    @Tag(name="Authentication API",description = "APIS for managing Authentication")
+
     @PostMapping("/signout")
     public ResponseEntity<?> logoutUser(   ){
         ResponseCookie jwtCookie = jwtUnits.getCleanJwtCookie();

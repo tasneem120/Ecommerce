@@ -31,14 +31,14 @@ private  String jwtSecret;
 @Value("${spring.ecom.app.jwtCookie}")
 private String jwtCookieName;
 
-//    public  String getJwtFromHeader(  HttpServletRequest httpServletRequest) {
-//        String bearerToken = httpServletRequest.getHeader("Authorization");
-//        LOGGER.debug("Bearer Token: {}", bearerToken);
-//if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-//    return bearerToken.substring(7);
-//}
-//return null;
-//    }
+    public  String getJwtFromHeader(  HttpServletRequest httpServletRequest) {
+        String bearerToken = httpServletRequest.getHeader("Authorization");
+
+if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+    return bearerToken.substring(7);
+}
+return null;
+    }
     public String getJwtCookieName(HttpServletRequest request) {
         Cookie cookie = WebUtils.getCookie(request,jwtCookieName);
         if (cookie != null) {
